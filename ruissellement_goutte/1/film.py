@@ -9,20 +9,20 @@ import timeloop
 #########################
 # Numeriques
 
-_N      = 100             # Nombre de cellules par direction
-_L      = 1.              # Longueur du domaine
-_CFL    = 0.95              # Nombre CFL
-_dtmax  = 0.1           # Pas de temps maximum autorisé
+_N      = 20             # Nombre de cellules par direction
+_L      = 10.              # Longueur du domaine
+_CFL    = 0.1              # Nombre CFL
+_dtmax  = 0.001           # Pas de temps maximum autorisé
 _itmax  = 100         # Nombre d'iterations temporelles max
-_tmax   = 0.5            # Temps de simulation max
-_tplot  = 0.1             # Temps de sauvegarde
+_tmax   = 0.01            # Temps de simulation max
+_tplot  = 0.001             # Temps de sauvegarde
 #
 # Parametres physiques
-_theta=30
+_theta=15
 _g   = 9.81             # Gravite
 _rol = 997.0            # Densite de l'eau liquide
 _mul = 1.0e-3           # Viscosite de l'eau liquide
-_h0  = 1.0           # Hauteur initiale du film
+_h0  = 0.01         # Hauteur initiale du film
 _eps = 1.0e-8           # Hauteur residuelle
 #
 ######################

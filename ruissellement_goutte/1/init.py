@@ -38,25 +38,27 @@ h    = np.zeros(_N+1)
 #######################################
 
 def init_variable_single(h, x, h0, L, N, eps, theta):
-	for i in range(N+1) :
-		if (x[i]<0.5*L and x[i]>0.25*L) :
+	
+	for i in range(N) :
+		if (0.25*L <= x[i] <= 0.5*L) :
 			h[i]=4*h0/L* x[i] -h0
 					
-		if (x[i]<0.75*L and x[i]>0.5*L) :
+		elif (0.5*L <= x[i] <= 0.75*L) :
 			h[i]=-4*h0/L* x[i] +3*h0
 			
 		else : 
 			h[i]=0			
+	
 		#h[i]=-4*h0/(L*np.cos(theta))**2*(x[i])**2+h0
-		#h[i]=x[i]**2 * ( -4*h0/(L*np.cos(theta))**2 ) + x[i] * ( np.sin(theta)/np.cos(theta)+4*(h0+h0*np.sin(theta))/np.cos(theta) )
+	#h[1:N+1]=x[0:N]**2 * ( -4*h0/(L*np.cos(theta))**2 ) + x[0:N] * ( np.sin(theta)/np.cos(theta)+4*(h0+h0*np.sin(theta))/np.cos(theta) )
 
     #
     #--------------------
     # Conditions limites
     # Ghost cells
     #--------------------
-	h[0]   = 0
-	h[N]   = 0
+	h[0]   = eps
+	h[N]   = eps
     #
 	return #h
 '''

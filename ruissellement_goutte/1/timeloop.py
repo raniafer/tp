@@ -4,12 +4,14 @@ import output
 ######################################
 # Calcul de la vitesse aux interfaces
 ######################################
-N=100
+N=20
 uhalf= np.zeros(N+1)
 def compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L): # en espace
-	for i in range(N):
-#	uhalf[0:N+1] = rol*h[0:N+1]**2*g/(3*mul)*( (h[0:N+1] - h[1:N+2]) / (x[0:N+1] - x[1:N+2]) )+np.sin(theta)
-		uhalf[i] = rol*h[i]**2*g/(3*mul)*( (h[i+1]-h[i]) / (x[i+1]-x[i]) *np.cos(theta) +np.sin(theta) )
+	#for i in range(N+2):
+	#uhalf[0:N+1] = rol*h[0:N+1]**2*g/(3*mul)*( (h[0:N+1] - h[1:N+2]) / (x[0:N+1] - x[1:N+2]) )+np.sin(theta)
+		#uhalf[i] = rol*h[i]**2*g/(3*mul)*( (h[i+1]-h[i]) / (x[i+1]-x[i]) *np.cos(theta) +np.sin(theta) )
+	#uhalf[1:N]=rol*h[1:N]**2*g/(3*mul)*( (h[1:]-h[:-1]) / (x[1:]-x[:-1]) *np.cos(theta) +np.sin(theta) )
+	uhalf[1:N+1]=rol*h[1:N+1]**2*g/(3*mul)*( (h[1:N+1]-h[0:N])/(x[1:N+1]-x[0:N]) *np.cos(theta) +np.sin(theta) )
 	return
 
 
@@ -20,7 +22,7 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
     #-----------------------
     # Variables temporaires
     #-----------------------
-    flux  = np.zeros(N+2)
+    flux  = np.zeros(N+1)
 #    uhalf = np.zeros(N+2)
     #
     #-------------------------------------
@@ -40,8 +42,13 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
     # Boucle temporelle
     #-------------------
     while (continuer):
-        print('it=', it,' t=',t,'s')
+        print('it=', it,' t=',t,'s', 'dt=', dt)
         print(h)
+        print("h[1:N+1]:", h[1:N+1])
+        print("uhalf[1:N+1]:", uhalf[1:N+1])
+        print("x[1:N+1] - x[0:N]:", x[1:N+1] - x[0:N])
+
+
         #
         #--------------------------
         # Calcul du flux numerique
@@ -51,14 +58,15 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
         h[0]   = eps
         h[N] = eps
         
-        flux[0:N]=np.maximum(uhalf[0:N],0)*h[0:N]+np.minimum(uhalf[0:N],0)*h[1:N+1]  # cest bon!
-           
+	#flux[0:N]=np.maximum(uhalf[0:N],0)*h[0:N]+np.minimum(uhalf[0:N],0)*h[1:N+1]
+        flux[1:]=np.maximum(uhalf[1:],0)*h[:-1]+np.minimum(uhalf[1:],0)*h[1:]
         #
         #----------------------
         # Schema volumes finis
         #----------------------
 
-        h[1:N+1]=h[0:N]-dt/dx*(flux[0:N]-flux[1:N+1])
+        #h[1:N+1]=h[0:N]-dt/dx*(flux[0:N]-flux[1:N+1])
+        h[1:]=h[:-1]- dt/dx * (flux[:-1]-flux[1:])
         #------------------------
         # Conditions aux limites
         # Ghost cells
