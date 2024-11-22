@@ -4,17 +4,30 @@ import output
 ######################################
 # Calcul de la vitesse aux interfaces
 ######################################
-N=500
+N=20
 uhalf= np.zeros(N+2)
-def compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx): 
-	uhalf[1:N+1]= - rol*h[1:N+1]**2*g/(3*mul)*( + (h[1:N+1]-h[0:N])/dx *np.cos(theta) + np.sin(theta) )
-	return
+k = np.zeros(N+2)
+'''
+def courbure(k, h, dx, N, x) :
+        k[1:N]= (h[2:N+1]+h[0:N-1]-2*h[1:N])/dx**2
+        k[0]=0
+        k[N+1]=0
+        return k
+'''
+def compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx, k, sigma):
+        k[1:N]= (h[2:N+1]+h[0:N-1]-2*h[1:N])/dx**2
+        k[0]=0
+        k[N+1]=0
+        uhalf[1:N+1]= - h[1:N+1]**2/(3*mul)*( g*rol*(h[1:N+1]-h[0:N])/dx *np.cos(theta) + g*rol*np.sin(theta)
+		      - sigma*(k[1:N+1]-k[0:N])/dx )
+        print ('sigma * (k[1:N+1]-k[0:N]) / dx : ', sigma*(k[1:N+1]-k[0:N])/dx )
+        return
 
 
 ##################
 # Boucle en temps
 ##################
-def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h0, theta, L, eps):
+def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h0, theta, L, eps, sigma):
     #-----------------------
     # Variables temporaires
     #-----------------------
@@ -44,7 +57,7 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
         #--------------------------
         # Calcul du flux numerique
         #--------------------------
-        compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx)
+        compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx, k, sigma)
         print ("uhalf: ",uhalf[:])
         h[0] = h[1]
         h[N+1] = h[N]

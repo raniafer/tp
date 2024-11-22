@@ -26,6 +26,8 @@ it.stabilite_FG(k, V, nu, dt)
 u0=-np.sin(x/10) # https://www.researchgate.net/publication/350160417_Evolutional_Deep_Neural_Network
 uk=np.fft.fft(u0)
 
+#u0=     https://www.merl.com/publications/docs/TR2022-163.pdf page 11
+
 # uk1 uk en n+1
 # uk  uk en n
 # uk0 uk en n-1

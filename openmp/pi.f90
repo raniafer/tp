@@ -31,7 +31,7 @@ program valeur_pi
 	use m
 	implicit none
 	real :: a=0, b=1, intg
-	integer :: n=1000000, k
+	integer :: n=10000000, k
 	real :: t1, t2
 	
 	do k=2, 16, 2
