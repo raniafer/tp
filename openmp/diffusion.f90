@@ -4,7 +4,8 @@ module m
 
 	subroutine init(n, dx, f0)
 		implicit none
-		integer :: i, n
+		integer :: i
+		integer, parameter :: n
 		real, dimension(n) :: f0
 		real, parameter :: pi=acos(-1.)
 		real :: a, b, dx, x
@@ -22,12 +23,12 @@ module m
 
 	function smb(f0) result(F)
 		implicit none
-		integer :: n
+		integer :: n, i
 		real :: dx
 		real, dimension (n) :: f0
 		real, dimension (n-1) :: df1
 		real, dimension (n-2) :: df2, F
-		integer :: i
+		real :: D, V
 
 		call init(n, dx, f0)
 
@@ -40,7 +41,7 @@ module m
 		end do	
 		
 		do i=1, n
-			F(i)=-V*df1()+D*df2()
+			F(i)=-V*df1(i)+D*df2(i)
 		end do
 
 
@@ -54,12 +55,13 @@ module m
 		real, dimension(n-2) :: F, f0
 		real :: dt, D, V
 	
-		call smb(n, df1, df2, f0)
+		!call smb(n, df1, df2, f0)
+		
 
-		do i=1, n-2
-			F(i)=-V*df1(i)+D*df2(i)
+	!	do i=1, n-2
+	!		F(i)=-V*df1(i)+D*df2(i)
 	!		f0(i)=f0(i)+dt*F(i)
-		end do
+	!	end do
 	end subroutine
 end module
 
