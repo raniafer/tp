@@ -28,13 +28,13 @@ program diffusion
 	use m
 	implicit none 
 	
-	integer :: n=100
-	real, dimension(100) :: f0=0., df1, df2
-	real, dimension(100) :: F=0.
+	integer :: n=10000
+	real, dimension(10000) :: f0=0., df1, df2
+	real, dimension(10000) :: F=0.
 	integer :: io, i, j, k, Nt, i1
 	real :: D=0.5, V=5., dt, dx
 	real :: t1, t2
-	integer :: n_threads=6
+	integer :: n_threads=2
 	
 	open(unit=20, file="initial.txt", iostat=io)
 	open(unit=30, file="solution.txt", iostat=io)
@@ -44,12 +44,12 @@ program diffusion
 	call init(n, dx, f0, i1)
 
 	! stability condition
-	dt=0.0001*dx/V; Nt=0.5/dt
+	dt=0.3*dx/V; Nt=0.1/dt
 	print*, "dx=", dx, "dt=", dt, "Nt=", Nt
 
 	do i=1, n
 		write(20, *) i, f0(i)
-		print*, f0(i)
+		!print*, f0(i)
 	end do
 
 
@@ -59,7 +59,7 @@ program diffusion
 	!$omp parallel private(i, i1, j) 
 		do i=1, Nt
 
-			!$omp do schedule(runtime)
+			!$omp do
 			do i1=2, n-1
                          df1(i1)=(f0(i1)-f0(i1-1))/dx
 			 df2(i1)=(f0(i1+1)-2*f0(i1)+f0(i1-1))/(dx**2)
@@ -76,8 +76,8 @@ program diffusion
 			F(1)=-V*df1(1)+D*df2(1)
 			F(n)=-V*df1(n)+D*df2(n)
 		! time stepping loop, not parallelized
-!$omp end single			
-			!$omp do schedule(runtime)
+!$omp end single
+			!$omp do 
 			do j=1, n
 				f0(j)=f0(j)+dt*F(j)
 			end do
