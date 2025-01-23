@@ -10,6 +10,14 @@ def compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx):
 	uhalf[1:N+1]= - rol*h[1:N+1]**2*g/(3*mul)*( + (h[1:N+1]-h[0:N])/dx *np.cos(theta) + np.sin(theta) )
 	return
 
+def compute_velocity_tension(uhalf, h, x, N, rol, mul, g, theta, L, dx, k, sigma):
+    k[1:N]= (h[2:N+1]+h[0:N-1]-2*h[1:N])/dx**2
+    k[0]=0
+    k[N+1]=0
+    uhalf[1:N+1]= - h[1:N+1]**2/(3*mul)*( g*rol*(h[1:N+1]-h[0:N])/dx *np.cos(theta) + g*rol*np.sin(theta)
+                      - sigma*(k[1:N+1]-k[0:N])/dx )
+    return
+
 
 ##################
 # Boucle en temps
@@ -37,15 +45,22 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
     # Boucle temporelle
     #-------------------
     while (continuer):
+        #log
         print('it=', it,' t=',t,'s', 'dt=', dt)
-        print(h)
-        print("h[:]:", h[:])
+        print("Solving for h ", h[:])
         #
         #--------------------------
         # Calcul du flux numerique
         #--------------------------
+        # negligeant les tensions de surface
+        #-------------------------
         compute_velocity(uhalf, h, x, N, rol, mul, g, theta, L, dx)
-        print ("uhalf: ",uhalf[:])
+        #-------------------------
+        # considerant les tensions de surface 
+        #------------------------
+        #compute_velocity_tension(uhalf, h, x, N, rol, mul, g, theta, L, dx, k, sigma)
+
+        print ("Solving for uhalf ",uhalf[:])
         h[0] = h[1]
         h[N+1] = h[N]
         
@@ -54,8 +69,6 @@ def compute_timeloop(h, x, dx, CFL, N, rol, mul, g, itmax, tmax, dtmax, tplot, h
         #----------------------
         # Schema volumes finis
         #----------------------
-        #h[1:]=h[:-1]- dt/dx * (flux[:-1]-flux[1:])
-        #hn=h.copy()
         h[1:]=h[1:]- dt/dx * (flux[:-1]-flux[1:])
         #------------------------
         # Conditions aux limites
